@@ -26,18 +26,25 @@ class RegisterController extends Controller
             'name' => 'required|max:30',
             'username' => 'required|unique:users|min:5|max:20',
             'email' => 'required|unique:users|email|max:60',
-            'password' => 'required|confirmed|min:6'
+            'password' => 'required|confirmed|min:6' //se necesita el name: password_confirmation para que funcione la propiedad confirmed
         ]);
 
-        //dd('Creando Usuario');
+        //dd('Creando Usuario'); //die on dumb
         //TOMANDO VALORES E INSERTARLOS A LA BD
-        User::create([
+        User::create([ //equivalente a un INSERT en sql
             'name' => $request -> name,
             'username' => $request -> username, //USERNAME A URL
             'email' => $request -> email,
             'password' => Hash::make($request -> password), //PASSWORD HASHEADO
         ]);
 
+        //Autenticando
+        // auth()->attempt([
+        //     'email' => $request -> email,
+        //     'passwors' => $request -> password
+        // ]);
+        //Otra forma de autenticar
+        auth()->attempt($request->only('email', 'password'));
         //REDIRECCIONAR
         return redirect() -> route('post.index');
     }
